@@ -5,12 +5,6 @@ let bodyParser = require('body-parser')
 let SerialPort = require('serialport')
 let Readline = SerialPort.parsers.Readline
 
-const serialport = new SerialPort('COM3')
-
-const parser = new Readline()
-serialport.pipe(parser)
-parser.on('data', console.log)
-
 let port = process.env.PORT
 
 var app = express()
@@ -20,6 +14,19 @@ app.use(bodyParser.json())
 
 server.listen(port, () => {
 	console.log(`PTH Sensor reader started on port ${port}`)
+
+	// Read sensor data
+	const serialport = new SerialPort('COM3')
+	const parser = new Readline()
+	serialport.pipe(parser)
+	parser.on('data', (data) => {
+
+
+		let toolId = Math.floor(1 + Math.random() * 3)
+		let sensorId = toolId
+		console.log(`ToolID: ${toolId}, SensorID: ${sensorId}`)
+		console.log(data)
+	})
 })
 
 module.exports = {
