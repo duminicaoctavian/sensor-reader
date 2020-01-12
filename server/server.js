@@ -4,20 +4,31 @@ let http = require('http')
 let bodyParser = require('body-parser')
 let SerialPort = require('serialport')
 let Readline = SerialPort.parsers.Readline
+let axios = require('axios')
+let uuidv4 = require('uuid/v4')
 
 let port = process.env.PORT
-//int 
-//double
-//int
 
 function createPayload(toolID, sensorId, pressure, temp, humidity) {
-	return JSON.stringify({
+	return {
 		toolID,
 		sensorId,
 		pressure,
 		temp,
 		humidity
-	})
+	}
+}
+
+async function postTask(json) {
+	console.log(json)
+
+	await axios.post("http://192.168.43.61:8084/data", json)
+		.then(() => {
+			console.log(`Success`)
+		})
+		.catch((error) => {
+			console.log(`Failure with error: ${error}`)
+		})
 }
 
 var app = express()
@@ -32,27 +43,27 @@ server.listen(port, () => {
 	const serialport = new SerialPort('COM3')
 	const parser = new Readline()
 	serialport.pipe(parser)
-	parser.on('data', (data) => {
+	parser.on('data', async (data) => {
 
 		let toolId = Math.floor(1 + Math.random() * 3)
 		let sensorId = toolId
 		console.log(`ToolID: ${toolId}, SensorID: ${sensorId}`)
 
 		let measurementsArray = data.split(',')
-		
+
 		let pressure = measurementsArray[0]
 		let temp = measurementsArray[1]
 		let humidity = measurementsArray[2]
 
 		if (sensorId == 1) {
 			let json = createPayload(toolId, sensorId, pressure, "", "")
-			console.log(json)
+			await postTask(json)
 		} else if (sensorId == 2) {
 			let json = createPayload(toolId, sensorId, "", temp, "")
-			console.log(json)
+			await postTask(json)
 		} else if (sensorId == 3) {
 			let json = createPayload(toolId, sensorId, "", "", humidity)
-			console.log(json)
+			await postTask(json)
 		}
 	})
 })
