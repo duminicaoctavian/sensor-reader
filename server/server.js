@@ -6,6 +6,19 @@ let SerialPort = require('serialport')
 let Readline = SerialPort.parsers.Readline
 
 let port = process.env.PORT
+//int 
+//double
+//int
+
+function createPayload(toolID, sensorId, pressure, temp, humidity) {
+	return JSON.stringify({
+		toolID,
+		sensorId,
+		pressure,
+		temp,
+		humidity
+	})
+}
 
 var app = express()
 var server = http.createServer(app)
@@ -21,11 +34,26 @@ server.listen(port, () => {
 	serialport.pipe(parser)
 	parser.on('data', (data) => {
 
-
 		let toolId = Math.floor(1 + Math.random() * 3)
 		let sensorId = toolId
 		console.log(`ToolID: ${toolId}, SensorID: ${sensorId}`)
-		console.log(data)
+
+		let measurementsArray = data.split(',')
+		
+		let pressure = measurementsArray[0]
+		let temp = measurementsArray[1]
+		let humidity = measurementsArray[2]
+
+		if (sensorId == 1) {
+			let json = createPayload(toolId, sensorId, pressure, "", "")
+			console.log(json)
+		} else if (sensorId == 2) {
+			let json = createPayload(toolId, sensorId, "", temp, "")
+			console.log(json)
+		} else if (sensorId == 3) {
+			let json = createPayload(toolId, sensorId, "", "", humidity)
+			console.log(json)
+		}
 	})
 })
 
