@@ -10,6 +10,7 @@
 	"author": "Octavian Duminica",
 	"license": "ISC",
 	"dependencies": {
+		"bluetooth-serial-port": "^2.2.7",
 		"body-parser": "^1.19.0",
 		"express": "^4.17.1",
 		"jsonwebtoken": "^8.5.1",
