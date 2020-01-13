@@ -9,9 +9,9 @@ let uuidv4 = require('uuid/v4')
 
 let port = process.env.PORT
 
-function createPayload(toolID, sensorId, pressure, temp, humidity) {
+function createPayload(toolId, sensorId, pressure, temp, humidity) {
 	return {
-		toolID,
+		toolId,
 		sensorId,
 		pressure,
 		temp,
